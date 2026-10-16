@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CourseApp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAF9F5; --ink:#181C2E; --ink-soft:#5B6178; --line:#E4E0D4;
+  --surface:rgba(255,255,255,0.74); --surface-sunk:rgba(99,88,200,0.08); --glass:rgba(250,249,245,0.72); --bgA:rgba(67,56,224,0.22); --bgB:rgba(232,83,122,0.18); --bgC:rgba(139,63,232,0.20);
+  --g1:#4338E0; --g2:#8B3FE8; --g3:#E8537A;
+  --grad: linear-gradient(120deg, var(--g1), var(--g2) 55%, var(--g3));
+  --blue:#4338E0; --blue-tint:#ECEAFC;
+  --green:#1F8F5F; --green-tint:#E2F5EB;
+  --amber:#B4740F; --amber-tint:#FBEFD9;
+  --red:#D13D3D; --red-tint:#FBE6E6;
+  --serif:'Fraunces', Georgia, serif;
+  --sans:'Plus Jakarta Sans', -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --mono:'IBM Plex Mono', 'SF Mono', Consolas, monospace;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1119; --ink:#F0F1F8; --ink-soft:#9FA5BE; --line:#2A2E42;
+    --surface:rgba(27,30,48,0.72); --surface-sunk:rgba(0,0,0,0.28); --glass:rgba(15,17,25,0.72); --bgA:rgba(116,107,255,0.34); --bgB:rgba(255,127,160,0.16); --bgC:rgba(181,123,255,0.24);
+    --g1:#746BFF; --g2:#B57BFF; --g3:#FF7FA0;
+    --blue:#857CFF; --blue-tint:#211F3B;
+    --green:#4FCB8F; --green-tint:#122A1F;
+    --amber:#EBB757; --amber-tint:#2E2514;
+    --red:#F17272; --red-tint:#311A1A;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1119; --ink:#F0F1F8; --ink-soft:#9FA5BE; --line:#2A2E42;
+  --surface:rgba(27,30,48,0.72); --surface-sunk:rgba(0,0,0,0.28); --glass:rgba(15,17,25,0.72); --bgA:rgba(116,107,255,0.34); --bgB:rgba(255,127,160,0.16); --bgC:rgba(181,123,255,0.24);
+  --g1:#746BFF; --g2:#B57BFF; --g3:#FF7FA0;
+  --blue:#857CFF; --blue-tint:#211F3B;
+  --green:#4FCB8F; --green-tint:#122A1F;
+  --amber:#EBB757; --amber-tint:#2E2514;
+  --red:#F17272; --red-tint:#311A1A;
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px); height:100%;}
+body{margin:0; min-height:100%; background:var(--paper); color:var(--ink); font-family:var(--sans); font-size:15px; -webkit-font-smoothing:antialiased;}
+body::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:10; background:var(--glass); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);}
+svg{display:block;}
+
+header{position:sticky; top:0; z-index:5; background:var(--glass); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-bottom:1px solid var(--line);}
+.headbar{padding:calc(14px + env(safe-area-inset-top,0px)) 20px 10px; display:flex; align-items:center; justify-content:space-between;}
+.mark{font-family:var(--serif); font-weight:700; font-size:20px; letter-spacing:-0.01em; display:flex; align-items:center; gap:7px;}
+.mark .dot{width:9px; height:9px; border-radius:50%; background:var(--grad);}
+.mark span{background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;}
+.crumb{font-family:var(--mono); font-size:11.5px; color:var(--blue); cursor:pointer; display:flex; align-items:center; gap:4px;}
+.demobar{display:flex; align-items:center; gap:8px; padding:8px 20px 12px; border-bottom:1px solid var(--line); font-size:11.5px; color:var(--ink-soft); flex-wrap:wrap;}
+.demobar b{color:var(--ink); font-weight:600;}
+.demobar input[type=date]{border:1px solid var(--line); border-radius:6px; padding:4px 6px; font-size:11.5px; background:var(--surface); color:var(--ink); font-family:var(--mono);}
+.demobar button{border:none; background:var(--surface-sunk); color:var(--ink-soft); border-radius:6px; padding:4px 9px; font-size:11px; cursor:pointer;}
+
+main{max-width:520px; margin:0 auto; padding:18px 18px 120px;}
+h2.sec{font-family:var(--serif); font-size:18px; font-weight:700; margin:30px 0 4px; letter-spacing:-0.01em; display:flex; align-items:center; gap:8px;}
+h2.sec:first-child{margin-top:4px;}
+.sec-sub{font-size:12px; color:var(--ink-soft); margin-bottom:12px;}
+p.lede{color:var(--ink-soft); font-size:13.5px; line-height:1.55; margin:4px 0 16px;}
+
+.ledger{}
+.ledger-row{display:flex; align-items:center; gap:12px; padding:13px 14px; margin-bottom:9px; background:var(--surface); border:1px solid var(--line); border-radius:14px; cursor:pointer; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);}
+.ledger-row::after{content:"›"; color:var(--ink-soft); font-size:22px; line-height:1;}
+.ledger-row:active{background:var(--surface-sunk);}
+.ledger-row .tag{width:4px; align-self:stretch; border-radius:2px; flex:0 0 4px;}
+.tag.green{background:var(--green);} .tag.amber{background:var(--amber);} .tag.red{background:var(--red);} .tag.flat{background:var(--line);}
+.ledger-row .body{flex:1; min-width:0;}
+.ledger-row .name{font-weight:600; font-size:14.5px;}
+.ledger-row .sub{font-size:12px; color:var(--ink-soft); margin-top:2px;}
+.ledger-row .num{font-family:var(--mono); font-size:12.5px; color:var(--ink-soft); white-space:nowrap; text-align:right;}
+
+.empty{text-align:center; padding:44px 10px 28px; color:var(--ink-soft);}
+.empty .ic{width:46px; height:46px; margin:0 auto 14px; border-radius:50%; background:var(--grad); display:flex; align-items:center; justify-content:center; color:#fff; font-size:20px;}
+.empty .big{font-family:var(--serif); font-weight:700; font-size:18px; color:var(--ink); margin-bottom:6px;}
+
+.btn{display:block; width:100%; text-align:center; border:none; padding:13px; border-radius:11px; font-size:14px; font-weight:700; cursor:pointer; font-family:var(--sans); color:#fff; background:var(--grad); box-shadow:0 6px 16px -8px rgba(74,56,224,0.55);}
+.btn.outline{background:transparent; color:var(--ink); border:1px solid var(--line); box-shadow:none;}
+.btn.ghost{background:none; color:var(--ink-soft); border:none; text-decoration:underline; padding:8px; box-shadow:none;}
+.btn.sm{display:inline-block; width:auto; padding:9px 14px; font-size:12.5px; border-radius:8px; box-shadow:none;}
+.btn.disabled{opacity:0.4; pointer-events:none;}
+.btn-row{display:flex; gap:8px;} .btn-row .btn{flex:1;}
+
+.field{margin-bottom:14px;}
+.field label{display:block; font-size:12px; color:var(--ink-soft); margin-bottom:5px;}
+.field input, .field select{width:100%; border:1px solid var(--line); border-radius:9px; padding:11px; font-size:14.5px; background:var(--surface); color:var(--ink); font-family:var(--sans);}
+.field input:focus, .field select:focus{outline:2px solid var(--blue); outline-offset:1px;}
+.field-row{display:flex; gap:10px;} .field-row .field{flex:1;}
+.check-row{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-soft); margin-top:-4px; margin-bottom:14px;}
+
+/* wizard */
+.wizprog{display:flex; gap:5px; margin-bottom:22px;}
+.wizprog .seg{flex:1; height:4px; border-radius:3px; background:var(--line);}
+.wizprog .seg.on{background:var(--grad);}
+.wiz-title{font-family:var(--serif); font-size:22px; font-weight:700; margin:0 0 4px;}
+.wiz-sub{font-size:13px; color:var(--ink-soft); margin-bottom:20px; line-height:1.5;}
+.chipgrid{display:flex; gap:7px; flex-wrap:wrap; margin-bottom:8px;}
+.chip{padding:10px 15px; border-radius:10px; border:1px solid var(--line); font-size:13.5px; cursor:pointer; background:var(--surface);}
+.chip.sel{border-color:transparent; background:var(--grad); color:#fff; font-weight:700;}
+.previewline{font-family:var(--mono); font-size:12px; color:var(--ink-soft); background:var(--surface-sunk); border-radius:8px; padding:10px 12px; margin:14px 0;}
+.review-row{display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--line); font-size:13.5px;}
+.review-row .k{color:var(--ink-soft);}
+
+.gauge{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:20px 18px 16px; margin-bottom:6px; position:relative; overflow:hidden;}
+.gauge::before{content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--grad);}
+.gauge .weeklabel{font-size:11.5px; color:var(--ink-soft); font-family:var(--mono); margin-bottom:10px; display:flex; justify-content:space-between;}
+.gauge .range{display:flex; align-items:baseline; gap:8px; font-family:var(--mono);}
+.gauge .range .num{font-size:32px; font-weight:600; letter-spacing:-0.02em;}
+.gauge .range .dash{color:var(--ink-soft); font-size:18px;}
+.gauge .range .lbl{font-size:11px; color:var(--ink-soft); margin-left:auto; text-align:right; line-height:1.4;}
+.ruler{position:relative; height:26px; margin:16px 0 4px; background:var(--surface-sunk); border-radius:7px; overflow:visible;}
+.ruler .fill{position:absolute; top:0; bottom:0; background:var(--grad); opacity:0.85; border-radius:7px;}
+.ruler .tick{position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--ink);}
+.ruler .ticklabel{position:absolute; top:30px; font-size:10px; font-family:var(--mono); color:var(--ink-soft); transform:translateX(-50%); white-space:nowrap;}
+
+.verdict{border-radius:11px; padding:13px 14px; font-size:13.5px; line-height:1.5; margin:16px 0 4px;}
+.verdict.green{background:var(--green-tint); color:var(--green);}
+.verdict.amber{background:var(--amber-tint); color:var(--amber);}
+.verdict.red{background:var(--red-tint); color:var(--red);}
+.verdict b{font-weight:700;}
+
+details.breakdown{border:1px solid var(--line); border-radius:10px; margin:14px 0; background:var(--surface);}
+details.breakdown summary{padding:11px 14px; font-size:13px; color:var(--blue); cursor:pointer; font-weight:500; list-style:none; display:flex; justify-content:space-between; align-items:center;}
+details.breakdown summary::-webkit-details-marker{display:none;}
+details.breakdown summary::after{content:'expand'; font-family:var(--mono); font-size:10.5px; color:var(--ink-soft);}
+details.breakdown[open] summary::after{content:'collapse';}
+.bkrow{display:flex; justify-content:space-between; padding:8px 14px; font-size:12.5px; border-top:1px solid var(--line); gap:10px;}
+.bkrow .k{color:var(--ink-soft);} .bkrow .v{font-family:var(--mono); white-space:nowrap;}
+.bkformula{padding:10px 14px 13px; font-family:var(--mono); font-size:11.5px; color:var(--ink-soft); border-top:1px solid var(--line); line-height:1.7;}
+.bkformula b{color:var(--ink);}
+
+.wmeter{height:7px; border-radius:4px; background:var(--surface-sunk); overflow:hidden; margin:10px 0 6px;}
+.wmeter .f{height:100%; background:var(--blue);}
+.wmeter.over .f{background:var(--red);}
+.wnote{font-size:12px; color:var(--ink-soft);}
+.wnote.warn{color:var(--amber);} .wnote.bad{color:var(--red);} .wnote.ok{color:var(--green);}
+
+/* groups */
+.group{border:1px solid var(--line); border-radius:12px; margin-bottom:10px; background:var(--surface); overflow:hidden;}
+.group > summary{list-style:none; padding:13px 14px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:10px;}
+.group > summary::-webkit-details-marker{display:none;}
+.group .gname{font-weight:700; font-size:13.5px;}
+.group .gmeta{font-size:11.5px; color:var(--ink-soft); margin-top:2px;}
+.group .gdone{font-family:var(--mono); font-size:12px; color:var(--ink-soft); white-space:nowrap;}
+.entry-row{display:flex; align-items:center; gap:8px; padding:9px 14px; border-top:1px solid var(--line);}
+.entry-row .ename{flex:1; font-size:12.5px; color:var(--ink-soft);}
+.entry-row input[type=number]{width:56px; border:1px solid var(--line); border-radius:7px; padding:6px; font-size:12.5px; background:var(--surface-sunk); color:var(--ink); font-family:var(--mono); text-align:right;}
+.entry-row select{border:1px solid var(--line); border-radius:7px; padding:6px 4px; font-size:10.5px; background:var(--surface-sunk); color:var(--ink); width:84px;}
+.group-rm{text-align:center; padding:9px; border-top:1px solid var(--line);}
+.group-rm button{background:none; border:none; color:var(--red); font-size:12px; cursor:pointer;}
+
+.addgroup{background:var(--surface-sunk); border-radius:12px; padding:14px;}
+.addline{display:flex; gap:8px; margin-top:10px;}
+.addline input, .addline select{flex:1; border:1px solid var(--line); border-radius:8px; padding:9px 10px; font-size:13px; background:var(--surface); color:var(--ink); font-family:var(--sans);}
+.addline input.w{flex:0 0 58px; font-family:var(--mono); text-align:right;}
+.addline input.c{flex:0 0 52px; font-family:var(--mono); text-align:right;}
+
+/* session gating */
+.lockcard{background:var(--surface-sunk); border:1px dashed var(--line); border-radius:12px; padding:16px; text-align:center;}
+.lockcard .lk{font-size:20px; margin-bottom:6px;}
+.lockcard p{font-size:12.5px; color:var(--ink-soft); margin:0 0 12px;}
+.sessioninfo{display:flex; justify-content:space-between; align-items:center; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-size:13px; margin-bottom:10px;}
+.sessioninfo .edit{font-size:11.5px; color:var(--blue); cursor:pointer;}
+
+.choice-label{font-size:12.5px; color:var(--ink-soft); margin:14px 0 7px;}
+.choice-label:first-child{margin-top:0;}
+.choices{display:flex; gap:7px;}
+.choice{flex:1; text-align:center; padding:11px 6px; border:1px solid var(--line); border-radius:9px; font-size:12.5px; cursor:pointer; background:var(--surface);}
+.choice.sel{border-color:transparent; background:var(--grad); color:#fff; font-weight:700;}
+
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:14px;}
+
+.eng-hero{border-radius:14px; padding:18px; margin-bottom:12px; background:var(--grad); color:#fff; position:relative; overflow:hidden;}
+.eng-hero .big{font-family:var(--serif); font-weight:700; font-size:26px;}
+.eng-hero .sub{font-size:12.5px; opacity:0.92; margin-top:4px;}
+.chartwrap{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px 14px 8px; margin:12px 0;}
+.chartwrap .chartlbl{font-size:11.5px; color:var(--ink-soft); margin-bottom:8px; display:flex; justify-content:space-between;}
+.history{border-top:1px solid var(--line);}
+.hrow{display:flex; align-items:center; gap:10px; padding:9px 2px; border-bottom:1px solid var(--line); font-size:12.5px;}
+.hrow .d{font-family:var(--mono); color:var(--ink-soft); width:76px; flex-shrink:0;}
+.hrow .icons{flex:1; color:var(--ink-soft);}
+.hrow .sc{font-family:var(--mono); font-weight:600; width:36px; text-align:right;}
+.stat-row{display:flex; gap:10px; margin:10px 0 4px;}
+.stat{flex:1; background:var(--surface-sunk); border-radius:10px; padding:10px 12px;}
+.stat .n{font-family:var(--mono); font-size:19px; font-weight:600;}
+.stat .l{font-size:10.5px; color:var(--ink-soft); margin-top:2px;}
+
+/* schedule */
+.weekblock{border:1px solid var(--line); border-radius:10px; margin-bottom:8px; background:var(--surface);}
+.weekblock > summary{list-style:none; padding:10px 14px; cursor:pointer; display:flex; justify-content:space-between; font-size:13px; font-weight:600;}
+.weekblock > summary::-webkit-details-marker{display:none;}
+.weekblock.current{border-color:var(--blue);}
+.daydots{display:flex; gap:6px; padding:0 14px 12px; flex-wrap:wrap;}
+.daydot{font-size:11px; font-family:var(--mono); padding:5px 8px; border-radius:7px; background:var(--surface-sunk); color:var(--ink-soft);}
+.daydot.done{background:var(--green-tint); color:var(--green);}
+
+body::after{content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; background:radial-gradient(70% 45% at 0% 0%, var(--bgA), transparent 70%), radial-gradient(60% 40% at 100% 25%, var(--bgB), transparent 70%), radial-gradient(70% 50% at 25% 100%, var(--bgC), transparent 70%), var(--paper);}
+.gauge,.panel,.group,.weekblock,.chartwrap,.sessioninfo,details.breakdown,.chip,.choice,.lockcard,.addgroup{backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);}
+.crumb{padding:7px 12px; border-radius:999px; background:var(--surface); border:1px solid var(--line);}
+.nav{position:fixed; left:0; right:0; bottom:0; z-index:20; display:flex; justify-content:center; padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px)); background:var(--glass); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); border-top:1px solid var(--line);}
+.nav .inner{display:flex; width:100%; max-width:520px; gap:4px;}
+.nav button{flex:1; border:none; background:none; color:var(--ink-soft); font:600 10.5px var(--sans); display:flex; flex-direction:column; align-items:center; gap:4px; padding:7px 0; border-radius:12px; cursor:pointer;}
+.nav button.on{color:var(--blue); background:var(--blue-tint);}
+.nav svg{width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;}
+.tabs{display:flex; gap:6px; overflow-x:auto; margin:0 -18px 16px; padding:2px 18px 6px; scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex:0 0 auto; border:1px solid var(--line); background:var(--surface); color:var(--ink-soft); padding:9px 15px; border-radius:999px; font:600 13px var(--sans); cursor:pointer; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);}
+.tab.on{background:var(--grad); color:#fff; border-color:transparent;}
+.tiles{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:6px;}
+.tile{border:1px solid var(--line); background:var(--surface); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:16px; padding:14px 8px; font:600 12px var(--sans); color:var(--ink); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:8px;}
+.tile b{width:34px; height:34px; border-radius:11px; background:var(--grad); color:#fff; display:flex; align-items:center; justify-content:center; font-size:16px;}
+.btn:active,.tile:active,.tab:active{transform:scale(.98);}
+.entry-row.wrap{flex-wrap:wrap;}
+.entry-when{display:flex; gap:6px; width:100%;}
+.entry-row .entry-when select{flex:1; width:auto; font-size:12.5px; padding:8px 6px;}
+.entry-note{width:100%; font-size:11.5px; color:var(--amber);}
+.entry-note.ok{color:var(--green);}
+.entry-row input:disabled{opacity:0.45;}
+.mark{cursor:pointer;}
+@media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important;}}
+
+.i{fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; flex:none; display:inline-block; vertical-align:-3px;}
+.av,.gico{width:38px; height:38px; border-radius:12px; background:var(--blue-tint); color:var(--blue); display:flex; align-items:center; justify-content:center; flex:none;}
+.gico{width:34px; height:34px; border-radius:10px;}
+h2.sec svg{color:var(--g2); vertical-align:0;}
+.tab{display:inline-flex; align-items:center; gap:6px;}
+.tab .i{vertical-align:0;}
+.choice .i{margin-right:4px;}
+.lockcard .lk svg{margin:0 auto; color:var(--ink-soft);}
+.entry-note{display:flex; align-items:center; gap:5px;}
+.entry-note .i{vertical-align:0;}
+.scalehint{display:block; font-size:11px; opacity:0.8; margin-top:2px;}
+
+.rng{display:flex; gap:6px; margin:2px 0 8px;}
+.rngb{border:1px solid var(--line); background:var(--surface-sunk); color:var(--ink-soft); border-radius:999px; padding:6px 12px; font:600 12px var(--sans); cursor:pointer;}
+.rngb.on{background:var(--grad); color:#fff; border-color:transparent;}
+.eng-detail{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:12px 14px; margin:0 0 12px; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);}
+.ed-top{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+.ed-title{font-size:13px; text-align:center; flex:1;}
+.ed-nav{width:34px; height:34px; border-radius:10px; border:1px solid var(--line); background:var(--surface-sunk); color:var(--ink); font-size:18px; cursor:pointer;}
+.ed-nav:disabled{opacity:0.35; cursor:default;}
+.ed-score{display:flex; align-items:baseline; gap:6px; margin:10px 0 4px; font-family:var(--mono);}
+.ed-score>span:first-child{font-size:30px; font-weight:600;}
+.ed-score small{color:var(--ink-soft);}
+.ed-score .bad{color:var(--red);}
+.ed-vs{margin-left:auto; font-size:12px; color:var(--ink-soft);}
+.ed-vs.bad{color:var(--red);} .ed-vs.good{color:var(--green);}
+.ed-lines{font-size:12.5px; color:var(--ink-soft); line-height:1.5;}
+.legend{display:flex; gap:14px; flex-wrap:wrap; font-size:11px; color:var(--ink-soft); margin:2px 0 4px;}
+.legend i{display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--g2); margin-right:5px;}
+.legend i.red{background:var(--red);}
+.legend i.dash{width:14px; height:0; border-radius:0; background:none; border-top:1.5px dashed var(--ink-soft); vertical-align:2px;}
+.hrow .sc.bad{color:var(--red);}
+.hrow .d{width:62px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="headbar">
+    <div class="mark" onclick="App.goDashboard()"><span class="dot"></span>Course<span>App</span></div>
+    <div class="crumb" id="hDemo" style="display:none;" onclick="App.go('settings')"></div>
+    <div class="crumb" id="hCrumb" style="display:none;" onclick="App.back()">← back</div>
+  </div>
+</header>
+<main id="main"></main>
+<nav class="nav" id="nav"></nav>
+
+<script>
+/* ============ Repository ============ */
+const Store = {
+  key: 'courseapp_v3',
+  read(){ try{ const r=localStorage.getItem(this.key); return r?JSON.parse(r):{courses:[], demoDate:null}; }catch(e){ return {courses:[], demoDate:null}; } },
+  write(d){ try{ localStorage.setItem(this.key, JSON.stringify(d)); return true; }catch(e){ console.error(e); return false; } }
+};
+
+/* ============ Calculation Engine (Strategy: per-course split/thresholds; groups of N entries) ============ */
+const CalcEngine = {
+  allEntries(course){
+    const out=[];
+    course.groups.forEach(g=>{ const w=g.totalWeight/g.count; g.entries.forEach(e=> out.push({score:e.score, status:e.status, weight:w})); });
+    return out;
+  },
+  prefinalRange(course){
+    let knownValue=0, gradedWeight=0;
+    this.allEntries(course).forEach(e=>{
+      if(e.status==='graded'){ knownValue += (e.weight/100)*e.score; gradedWeight += e.weight; }
+    });
+    const pendingBucket=clamp(100-gradedWeight,0,100);
+    return { worst:knownValue, best:clamp(knownValue+pendingBucket,0,100), gradedWeight };
+  },
+  totalRange(course){
+    const P=this.prefinalRange(course);
+    const pf=course.split.prefinal/100, ff=course.split.final/100;
+    const sessionGraded = course.session.score!==null;
+    const worst=pf*P.worst + ff*(sessionGraded?course.session.score:0);
+    const best =pf*P.best  + ff*(sessionGraded?course.session.score:100);
+    return { worst:r1(worst), best:r1(best), P, sessionGraded };
+  },
+  neededSession(course, threshold){
+    const t=this.totalRange(course);
+    const pf=course.split.prefinal/100, ff=course.split.final/100;
+    if(t.sessionGraded) return { already:true, total:t.worst };
+    const needHigh=(threshold-pf*t.P.worst)/ff, needLow=(threshold-pf*t.P.best)/ff;
+    const lo=clamp(Math.min(needLow,needHigh),0,100), hi=clamp(Math.max(needLow,needHigh),0,100);
+    return { lo:r1(lo), hi:r1(hi), impossible: needLow>100 && needHigh>100, secured: needLow<=0 && needHigh<=0 };
+  }
+};
+
+/* ============ Engagement Baseline Engine ============ */
+const BaselineEngine = {
+  N:4, dropThreshold:0.35,
+  score(ci){ if(ci.attended) return 40+((ci.participation-1)/4)*30+((ci.understanding-1)/4)*30; if(ci.watched) return 15+((ci.understanding-1)/4)*25; return 0; },
+  analyze(checkins){
+    if(!checkins || checkins.length===0) return {status:'none'};
+    const sorted=[...checkins].sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const latest=sorted[0], history=sorted.slice(1,1+this.N);
+    if(history.length<this.N) return {status:'insufficient', have:checkins.length, need:this.N+1};
+    const baseline=history.reduce((s,c)=>s+this.score(c),0)/history.length;
+    const todayScore=this.score(latest);
+    const drop=baseline>0?(baseline-todayScore)/baseline:0;
+    return { status: drop>=this.dropThreshold?'drop':'ok', baseline:r1(baseline), todayScore:r1(todayScore), dropPct:r1(drop*100) };
+  }
+};
+
+function r1(n){ return Math.round(n*10)/10; }
+function clamp(n,a,b){ return Math.max(a,Math.min(b,n)); }
+function uid(){ return 'id'+Math.random().toString(36).slice(2,10); }
+function esc(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function clampScore(v){ if(v===''||v===null) return null; return clamp(Number(v),0,100); }
+function isoDate(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function fmtDate(iso){ const d=new Date(iso+'T00:00:00'); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); }
+const DOW_LABELS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DOW_ORDER=[1,2,3,4,5,6,0]; // Mon..Sun for chip display
+
+function generateSessions(startIso,endIso,weekdaysSet){
+  const sessions=[]; const start=new Date(startIso+'T00:00:00'); const end=new Date(endIso+'T00:00:00');
+  let d=new Date(start);
+  while(d<=end){
+    if(weekdaysSet.includes(d.getDay())){
+      const week=Math.floor((d-start)/6048e5)+1;
+      sessions.push({date:isoDate(d), week, dow:d.getDay()});
+    }
+    d.setDate(d.getDate()+1);
+  }
+  return sessions;
+}
+const GROUP_TYPES=[
+  {v:'midterm', l:'Midterm'}, {v:'quiz', l:'Quiz'}, {v:'homework', l:'Homework'},
+  {v:'lab', l:'Lab'}, {v:'project', l:'Project'}, {v:'other', l:'Other'}
+];
+
+const ICON={
+ home:'M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z',
+ book:'M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2zM4 19a2 2 0 0 1 2-2h12',
+ check:'M5 12l4 4 10-10', plus:'M12 5v14M5 12h14',
+ sliders:'M4 7h9M17 7h3M4 17h3M11 17h9M15 7m-2 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0M9 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0',
+ target:'M12 21a9 9 0 1 1 0-18 9 9 0 0 1 0 18zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8z',
+ clip:'M9 4h6v3H9zM7 5H6a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-1M9 14l2 2 4-4',
+ pulse:'M3 12h4l3-8 4 16 3-8h4',
+ cal:'M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM4 10h16M8 3v4M16 3v4',
+ sigma:'M18 5H7l6 7-6 7h11',
+ doc:'M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6',
+ quiz:'M12 21a9 9 0 1 1 0-18 9 9 0 0 1 0 18zM9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5M12 17h.01',
+ pencil:'M4 20l4-1 11-11-3-3L5 16zM14 6l3 3',
+ flask:'M9 3h6M10 3v6L5 19a1 1 0 0 0 1 1.5h12a1 1 0 0 0 1-1.5l-5-10V3M8 14h8',
+ cube:'M12 3l9 5-9 5-9-5zM3 13l9 5 9-5',
+ dots:'M6 12h.01M12 12h.01M18 12h.01',
+ lock:'M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3',
+ repeat:'M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3',
+ grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z'
+};
+function ic(n,sz){ sz=sz||18; return `<svg class="i" viewBox="0 0 24 24" width="${sz}" height="${sz}"><path d="${ICON[n]||''}"/></svg>`; }
+const TYPE_ICON={midterm:'doc', quiz:'quiz', homework:'pencil', lab:'flask', project:'cube', other:'dots'};
+const AV=['book','cube','flask','pencil','doc','target'];
+function cIcon(c){ return ic(AV[[...c.name].reduce((a,ch)=>a+ch.charCodeAt(0),0)%AV.length],20); }
+
+/* ============ App (Facade) ============ */
+const App = {
+  data: Store.read(),
+  view:'dashboard', activeCourseId:null,
+  wiz:{ step:1, name:'', startDate:'', endDate:'', weekdays:[] },
+
+  save(){ Store.write(this.data); },
+  today(){ return this.data.demoDate ? new Date(this.data.demoDate+'T12:00:00') : new Date(); },
+  setDemoDate(v){ this.data.demoDate=v; this.save(); this.renderChrome(); this.render(); },
+  resetDemoDate(){ this.data.demoDate=null; this.save(); this.renderChrome(); this.render(); },
+
+  courseTab:'overview',
+  toggleAdd(id){ this._addOpen=(this._addOpen===id)?null:id; this.render(); },
+  pickMode(id,m){ document.getElementById('gMode_'+id).value=m; ['single','weekly'].forEach(k=>document.getElementById('gm_'+k+'_'+id).classList.toggle('sel',k===m)); const n=document.getElementById('gCount_'+id); n.disabled=(m==='single'); if(m==='single') n.value=1; else if(Number(n.value)<2) n.value=10; document.getElementById('gFromL_'+id).textContent=m==='weekly'?'Starting from week':'Week'; document.getElementById('gDowL_'+id).textContent=m==='weekly'?'Every week on':'Weekday'; document.getElementById('gHint_'+id).textContent=m==='weekly'?'One item per week on this day. A grade can only be entered on the day of the work.':'Pick a week and a day — a grade cannot be entered before that day.'; },
+  migrate(){ this.data.courses.forEach(c=>{ c.checkins.forEach(ci=>{ if(!ci.v){ ci.participation=[1,3,5][ci.participation]||3; ci.understanding=[1,3,5][ci.understanding]||3; ci.watched=null; ci.v=2; } }); }); this.data.courses.forEach(c=>{ if(c.tzfix) return; const ns=generateSessions(c.startDate,c.endDate,c.weekdays); if(c.sessions.length===ns.length){ const m={}; c.sessions.forEach((o,i)=>m[o.date]=ns[i].date); c.checkins.forEach(ci=>{ if(m[ci.date]) ci.date=m[ci.date]; }); c.sessions=ns; } c.tzfix=true; }); this.save(); },
+  entryDue(c,e){ if(!e.week||e.dow===null||e.dow===undefined) return null; const st=new Date(c.startDate+'T00:00:00'); for(let i=0;i<7;i++){ const d=new Date(st); d.setDate(st.getDate()+(e.week-1)*7+i); if(d.getDay()===Number(e.dow)) return isoDate(d); } return null; },
+  eligibleSessions(c){ const t=isoDate(this.today()); return c.sessions.filter(s=>s.date<=t && !c.checkins.some(ci=>ci.date===s.date)).sort((a,b)=>a.date<b.date?1:-1); },
+  entryControls(c,g,e){
+    const today=isoDate(this.today()); const due=this.entryDue(c,e); const locked=!due||due>today;
+    const wk=Array.from({length:c.totalWeeks},(_,i)=>i+1).map(n=>`<option value="${n}" ${e.week===n?'selected':''}>Week ${n}</option>`).join('');
+    const dw=DOW_ORDER.map(d=>`<option value="${d}" ${e.dow===d?'selected':''}>${DOW_LABELS[d]}</option>`).join('');
+    const note=!due?ic('lock',13)+' Set a week and day — then grade entry unlocks':locked?`${ic('lock',13)} Unlocks ${fmtDate(due)} (${DOW_LABELS[e.dow]})`:`Open · ${fmtDate(due)}`;
+    return `<input type="number" min="0" max="100" placeholder="score" value="${e.score===null?'':e.score}" ${locked?'disabled':''} onchange="App.updateEntry('${c.id}','${g.id}','${e.id}', this.value)">
+      <div class="entry-when"><select onchange="App.updateEntryWhen('${c.id}','${g.id}','${e.id}','week',this.value)"><option value="">Week</option>${wk}</select><select onchange="App.updateEntryWhen('${c.id}','${g.id}','${e.id}','dow',this.value)"><option value="">Day</option>${dw}</select></div>
+      <div class="entry-note ${locked?'':'ok'}">${note}</div>`;
+  },
+  updateEntryWhen(id,gid,eid,field,val){ const c=this.course(id); const g=c.groups.find(x=>x.id===gid); const e=g.entries.find(x=>x.id===eid); if(!e) return; e[field]=val===''?null:Number(val); this.save(); this.render(); },
+  go(v){ this.view=v; this.render(); window.scrollTo(0,0); },
+  goDashboard(){ this.go('dashboard'); },
+  goCourses(){ this.go('courses'); },
+  openCourse(id,tab){ this._engSel=null; this.activeCourseId=id; this.courseTab=tab||'overview'; this.go('course'); },
+  setTab(t){ this._engSel=null; this.courseTab=t; this.render(); window.scrollTo(0,0); },
+  openCheckin(id){ this.activeCourseId=id; this.go('checkin'); },
+  back(){ if(this.view==='checkin'||this.view==='checkin_done') this.openCourse(this.activeCourseId,'engage'); else if(this.view==='course'||this.view==='setup') this.goCourses(); else this.goDashboard(); },
+  setTheme(t){ this.data.theme=t; this.save(); this.applyTheme(); this.render(); },
+  applyTheme(){ const t=this.data.theme; if(t==='light'||t==='dark') document.documentElement.setAttribute('data-theme',t); else document.documentElement.removeAttribute('data-theme'); },
+  course(id){ return this.data.courses.find(c=>c.id===id); },
+
+  /* ---- wizard ---- */
+  startWizard(){ this.wiz={step:1,name:'',startDate:'',endDate:'',weekdays:[]}; this.view='setup'; this.render(); },
+  wizNext(){ this.wiz.step=Math.min(4,this.wiz.step+1); this.render(); },
+  wizBack(){ this.wiz.step=Math.max(1,this.wiz.step-1); this.render(); },
+  wizSet(field,val){ this.wiz[field]=val; this.render(); },
+  wizToggleDay(d){
+    const i=this.wiz.weekdays.indexOf(d);
+    if(i>=0) this.wiz.weekdays.splice(i,1); else this.wiz.weekdays.push(d);
+    this.render();
+  },
+  wizComputedWeeks(){
+    if(!this.wiz.startDate||!this.wiz.endDate) return 0;
+    const s=new Date(this.wiz.startDate+'T00:00:00'), e=new Date(this.wiz.endDate+'T00:00:00');
+    if(e<s) return 0;
+    return Math.floor((e-s)/6048e5)+1;
+  },
+  createCourseFromWizard(){
+    const w=this.wiz;
+    if(!w.name.trim()||!w.startDate||!w.endDate||w.weekdays.length===0) return;
+    const sessions=generateSessions(w.startDate,w.endDate,w.weekdays);
+    const totalWeeks=Math.max(1,...sessions.map(s=>s.week), this.wizComputedWeeks());
+    const course={
+      id:uid(), name:w.name.trim(), startDate:w.startDate, endDate:w.endDate,
+      weekdays:[...w.weekdays].sort(), totalWeeks, sessions,
+      split:{prefinal:60, final:40}, thresholds:{close:50, scholarship:70},
+      groups:[], session:{decided:false, date:null, undetermined:false, score:null},
+      checkins:[]
+    };
+    this.data.courses.push(course); this.save(); this.openCourse(course.id);
+  },
+  deleteCourse(id){ this.data.courses=this.data.courses.filter(c=>c.id!==id); this.save(); this.goDashboard(); },
+
+  /* ---- groups ---- */
+  addGroup(id,type,customLabel,count,weight,mode,dow,from){
+    const c=this.course(id); const cnt=Math.max(1,Number(count)||1); const wt=clamp(Number(weight)||0,0,Math.max(0,100-this.weightSum(c)));
+    const typeInfo=GROUP_TYPES.find(t=>t.v===type)||GROUP_TYPES[GROUP_TYPES.length-1];
+    const label = type==='other' && customLabel.trim() ? customLabel.trim() : typeInfo.l;
+    const dw=(dow===''||dow==null)?null:Number(dow), fr=(from===''||from==null)?null:Number(from);
+    const entries=Array.from({length:cnt},(_,i)=>{ const wk=fr===null?null:(mode==='weekly'?fr+i:fr); return {id:uid(), idx:i+1, score:null, status:'pending', week:(wk!==null&&wk<=c.totalWeeks)?wk:null, dow:dw}; });
+    c.groups.push({id:uid(), type, label, count:cnt, totalWeight:wt, entries}); this._addOpen=null;
+    this.save(); this.render();
+  },
+  removeGroup(id,gid){ const c=this.course(id); c.groups=c.groups.filter(g=>g.id!==gid); this.save(); this.render(); },
+  updateEntry(id,gid,eid,value){
+    const c=this.course(id); const g=c.groups.find(x=>x.id===gid); const e=g.entries.find(x=>x.id===eid); if(!e) return;
+    const due=this.entryDue(c,e); if(!due||due>isoDate(this.today())){ this.render(); return; }
+    e.score=clampScore(value); e.status = e.score!==null ? 'graded' : 'pending';
+    this.save(); this.render();
+  },
+
+  /* ---- session (exam) gating ---- */
+  openSessionDateForm(id){ this._sessFormOpen=id; this.render(); },
+  confirmSessionDate(id,dateVal,undetermined){
+    const c=this.course(id);
+    c.session.decided=true;
+    c.session.undetermined=!!undetermined;
+    c.session.date = undetermined ? null : (dateVal||null);
+    this._sessFormOpen=null; this.save(); this.render();
+  },
+  editSessionDate(id){ this._sessFormOpen=id; this.render(); },
+  updateSessionScore(id,value){ const c=this.course(id); c.session.score=clampScore(value); this.save(); this.render(); },
+
+  updateSplit(id,which,value){ const c=this.course(id); const v=clamp(Number(value)||0,0,100); c.split[which]=v; c.split[which==='prefinal'?'final':'prefinal']=100-v; this.save(); this.render(); },
+  updateThreshold(id,which,value){ const c=this.course(id); c.thresholds[which]=clamp(Number(value)||0,0,100); this.save(); this.render(); },
+
+  submitCheckin(id,dateIso,attended,participation,understanding,watched){
+    const c=this.course(id);
+    if(c.checkins.some(ci=>ci.date===dateIso) || dateIso>isoDate(this.today())){ this.openCourse(id,'engage'); return; }
+    c.checkins.push({date:dateIso, attended:!!attended, participation:attended?participation:null, understanding:(attended||watched)?understanding:null, watched:attended?null:!!watched, v:2});
+    this.save(); this.view='checkin_done'; this.render();
+  },
+
+  weightSum(course){ return course.groups.reduce((s,g)=>s+Number(g.totalWeight||0),0); },
+  weekInfo(course){
+    const t=this.today(); const start=new Date(course.startDate+'T00:00:00'), end=new Date(course.endDate+'T00:00:00');
+    let week=Math.floor((t-start)/6048e5)+1; week=clamp(week,1,course.totalWeeks);
+    return { week, totalWeeks:course.totalWeeks, before:t<start, after:t>end };
+  },
+  statusFor(course){
+    const t=CalcEngine.totalRange(course);
+    if(t.worst>=course.thresholds.scholarship) return 'green';
+    if(t.best<course.thresholds.close) return 'red';
+    return 'amber';
+  },
+  engStatusFor(course){ return BaselineEngine.analyze(course.checkins); },
+
+  renderChrome(){
+    const h=document.getElementById('hDemo'); if(h){ h.style.display=this.data.demoDate?'flex':'none'; h.textContent='📅 '+(this.data.demoDate?fmtDate(this.data.demoDate):''); }
+    const l=document.getElementById('demoLabel'); if(l) l.textContent = this.data.demoDate ? fmtDate(this.data.demoDate)+' (demo)' : 'real';
+    const i=document.getElementById('demoInput'); if(i) i.value = this.data.demoDate || isoDate(this.today());
+  },
+  render(){
+    const map={dashboard:'dashboard',courses:'courses',course:'courses',setup:'courses',checkin_pick:'checkin',checkin:'checkin',checkin_done:'checkin',settings:'settings'};
+    const cur=map[this.view];
+    const crumb=document.getElementById('hCrumb');
+    crumb.style.display=['course','setup','checkin','checkin_done'].includes(this.view)?'flex':'none';
+    crumb.textContent=this.view==='course'?'← all courses':'← back';
+    const items=[['dashboard','Home','home'],['courses','Courses','book'],['checkin','Check-in','check'],['settings','Settings','sliders']];
+    document.getElementById('nav').innerHTML='<div class="inner">'+items.map(([k,l,d])=>`<button class="${cur===k?'on':''}" onclick="App.go('${k==='checkin'?'checkin_pick':k}')">${ic(d,22)}${l}</button>`).join('')+'</div>';
+    document.getElementById('main').innerHTML = this['render_'+this.view] ? this['render_'+this.view]() : '';
+    this.renderChrome();
+  },
+
+  render_dashboard(){
+    const courses=this.data.courses;
+    if(!courses.length){
+      return `<div class="empty">
+        <div class="ic">${ic('plus',22)}</div>
+        <div class="big">No courses yet</div>
+        <p style="font-size:13px; max-width:280px; margin:0 auto 18px;">Add your first course — semester dates, class days, grading from the syllabus — and see the whole picture.</p>
+        <button class="btn" onclick="App.startWizard()">Add course</button>
+      </div>`;
+    }
+    const engRows=courses.map(c=>{
+      const e=this.engStatusFor(c);
+      const cls=e.status==='drop'?'amber':e.status==='ok'?'green':'flat';
+      const text=e.status==='drop'?`drop of ${e.dropPct}%`:e.status==='ok'?`normal (${e.todayScore}/100)`:e.status==='insufficient'?`${e.have}/${e.need} check-ins`:'no check-ins';
+      return `<div class="ledger-row" onclick="App.openCourse('${c.id}','engage')"><div class="tag ${cls}"></div><div class="av">${cIcon(c)}</div><div class="body"><div class="name">${esc(c.name)}</div></div><div class="num">${text}</div></div>`;
+    }).join('');
+    const gradeRows=courses.map(c=>{
+      const st=this.statusFor(c), t=CalcEngine.totalRange(c);
+      const verdict=st==='green'?'scholarship':st==='red'?'at risk':'watch';
+      return `<div class="ledger-row" onclick="App.openCourse('${c.id}','grades')"><div class="tag ${st}"></div><div class="av">${cIcon(c)}</div><div class="body"><div class="name">${esc(c.name)}</div><div class="sub">${t.worst}–${t.best}% · thresholds ${c.thresholds.close}/${c.thresholds.scholarship}</div></div><div class="num">${verdict}</div></div>`;
+    }).join('');
+    return `
+      <div class="tiles">
+        <button class="tile" onclick="App.startWizard()"><b>${ic('plus',18)}</b>New course</button>
+        <button class="tile" onclick="App.go('checkin_pick')"><b>${ic('check',18)}</b>Check in</button>
+        <button class="tile" onclick="App.goCourses()"><b>${ic('grid',18)}</b>All courses</button>
+      </div>
+      <h2 class="sec">${ic('pulse',18)}Engagement today</h2>
+      <div class="sec-sub">Compared with your personal baseline for each course</div>
+      <div class="ledger">${engRows}</div>
+      <h2 class="sec">${ic('book',18)}My courses</h2>
+      <div class="sec-sub">Total and range while grades are incomplete</div>
+      <div class="ledger">${gradeRows}</div>
+      <div style="height:18px;"></div>
+      <button class="btn" onclick="App.startWizard()">Add course</button>`;
+  },
+
+  render_courses(){
+    const cs=this.data.courses;
+    const rows=cs.map(c=>{ const st=this.statusFor(c), t=CalcEngine.totalRange(c), wi=this.weekInfo(c);
+      return `<div class="ledger-row" onclick="App.openCourse('${c.id}')"><div class="tag ${st}"></div><div class="av">${cIcon(c)}</div><div class="body"><div class="name">${esc(c.name)}</div><div class="sub">Week ${wi.week} of ${wi.totalWeeks} · total ${t.worst}–${t.best}%</div></div></div>`; }).join('');
+    return `<h2 class="sec">${ic('book',18)}All courses</h2>
+      <div class="sec-sub">Open a course — grades, engagement and schedule live on separate tabs</div>
+      ${cs.length?`<div class="ledger">${rows}</div>`:`<p class="lede">No courses yet. Add your first one — it takes a minute.</p>`}
+      <div style="height:10px;"></div><button class="btn" onclick="App.startWizard()">Add course</button>`;
+  },
+  render_checkin_pick(){
+    const cs=this.data.courses;
+    if(!cs.length) return `<div class="empty"><div class="ic">${ic('check',22)}</div><div class="big">Add a course first</div><p style="font-size:13px; max-width:280px; margin:0 auto 18px;">Check-ins belong to a course — they build your personal baseline.</p></div><button class="btn" onclick="App.startWizard()">Add course</button>`;
+    const rows=cs.map(c=>{ const e=this.engStatusFor(c);
+      const cls=e.status==='drop'?'amber':e.status==='ok'?'green':'flat';
+      const text=e.status==='insufficient'?`${e.have}/${e.need} check-ins`:e.status==='none'?'no check-ins':`${c.checkins.length} check-ins`;
+      return `<div class="ledger-row" onclick="App.openCheckin('${c.id}')"><div class="tag ${cls}"></div><div class="av">${cIcon(c)}</div><div class="body"><div class="name">${esc(c.name)}</div><div class="sub">${text} · ${this.eligibleSessions(c).length?'available: '+this.eligibleSessions(c).length:'nothing to check in'}</div></div></div>`; }).join('');
+    return `<h2 class="sec">${ic('check',18)}Check in</h2><div class="sec-sub">Choose a course</div><div class="ledger">${rows}</div>`;
+  },
+  render_settings(){
+    const th=this.data.theme||'auto';
+    const ch=(v,l)=>`<div class="choice ${th===v?'sel':''}" onclick="App.setTheme('${v}')">${l}</div>`;
+    return `<h2 class="sec">${ic('sliders',18)}Settings</h2>
+      <div class="sec-sub">Demo mode and appearance</div>
+      <div class="panel">
+        <div class="field"><label>Demo date: <b id="demoLabel"></b></label><input type="date" id="demoInput" onchange="App.setDemoDate(this.value)"></div>
+        <button class="btn outline sm" onclick="App.resetDemoDate()">Reset to today</button>
+      </div>
+      <div class="panel"><div class="choice-label">Theme</div><div class="choices">${ch('auto','Auto')}${ch('light','Light')}${ch('dark','Dark')}</div></div>
+      <button class="btn outline" onclick="App.go('dashboard')">Go home</button>`;
+  },
+
+  /* ---- wizard screens ---- */
+  render_setup(){
+    const w=this.wiz, step=w.step;
+    const prog=`<div class="wizprog">${[1,2,3,4].map(i=>`<div class="seg ${i<=step?'on':''}"></div>`).join('')}</div>`;
+    if(step===1){
+      return `${prog}
+        <div class="wiz-title">What is the course called?</div>
+        <div class="wiz-sub">The name as in your syllabus.</div>
+        <div class="field"><input type="text" value="${esc(w.name)}" placeholder="Algorithms and Data Structures" oninput="App.wiz.name=this.value; document.getElementById('wizNext').classList.toggle('disabled', !this.value.trim());" onkeydown="if(event.key==='Enter'&&this.value.trim()) App.wizNext()" autofocus></div>
+        <div class="btn-row"><button class="btn outline" onclick="App.goDashboard()">Cancel</button>
+        <button id="wizNext" class="btn ${!w.name.trim()?'disabled':''}" onclick="App.wizNext()">Next</button></div>`;
+    }
+    if(step===2){
+      const weeks=this.wizComputedWeeks();
+      const ok = w.startDate && w.endDate && weeks>0;
+      return `${prog}
+        <div class="wiz-title">When does the semester start and end?</div>
+        <div class="wiz-sub">We will build the class schedule from these dates.</div>
+        <div class="field-row">
+          <div class="field"><label>Start</label><input type="date" value="${w.startDate}" onchange="App.wizSet('startDate', this.value)"></div>
+          <div class="field"><label>End</label><input type="date" value="${w.endDate}" onchange="App.wizSet('endDate', this.value)"></div>
+        </div>
+        ${weeks>0?`<div class="previewline">That makes ${weeks} ${weeksWord(weeks)}</div>`:w.startDate&&w.endDate?`<div class="previewline" style="color:var(--red);">End is before start — check the dates</div>`:''}
+        <div class="btn-row"><button class="btn outline" onclick="App.wizBack()">Back</button>
+        <button class="btn ${!ok?'disabled':''}" onclick="App.wizNext()">Next</button></div>`;
+    }
+    if(step===3){
+      const chips=DOW_ORDER.map(d=>`<div class="chip ${w.weekdays.includes(d)?'sel':''}" onclick="App.wizToggleDay(${d})">${DOW_LABELS[d]}</div>`).join('');
+      const sessions = w.weekdays.length ? generateSessions(w.startDate,w.endDate,w.weekdays) : [];
+      return `${prog}
+        <div class="wiz-title">Which weekdays are the classes on?</div>
+        <div class="wiz-sub">Pick several — we will build the schedule for the whole semester.</div>
+        <div class="chipgrid">${chips}</div>
+        ${sessions.length?`<div class="previewline">That makes ${sessions.length} classes over ${this.wizComputedWeeks()} ${weeksWord(this.wizComputedWeeks())}</div>`:''}
+        <div class="btn-row"><button class="btn outline" onclick="App.wizBack()">Back</button>
+        <button class="btn ${w.weekdays.length===0?'disabled':''}" onclick="App.wizNext()">Next</button></div>`;
+    }
+    // step 4 — review
+    const sessions=generateSessions(w.startDate,w.endDate,w.weekdays);
+    return `${prog}
+      <div class="wiz-title">Review and create the course</div>
+      <div class="wiz-sub">You can fine-tune the schedule and formula later.</div>
+      <div class="panel">
+        <div class="review-row"><span class="k">Name</span><span>${esc(w.name)}</span></div>
+        <div class="review-row"><span class="k">Period</span><span>${fmtDate(w.startDate)} – ${fmtDate(w.endDate)}</span></div>
+        <div class="review-row"><span class="k">Weeks</span><span>${this.wizComputedWeeks()}</span></div>
+        <div class="review-row"><span class="k">Class days</span><span>${w.weekdays.sort().map(d=>DOW_LABELS[d]).join(', ')}</span></div>
+        <div class="review-row" style="border-bottom:none;"><span class="k">Total classes</span><span>${sessions.length}</span></div>
+      </div>
+      <div class="btn-row"><button class="btn outline" onclick="App.wizBack()">Back</button>
+      <button class="btn" onclick="App.createCourseFromWizard()">Create course</button></div>`;
+  },
+
+  render_course(){
+    const c=this.course(this.activeCourseId);
+    if(!c){ this.goDashboard(); return ''; }
+    const w=this.weightSum(c), wi=this.weekInfo(c);
+    const t=CalcEngine.totalRange(c);
+    const nClose=CalcEngine.neededSession(c,c.thresholds.close), nSchol=CalcEngine.neededSession(c,c.thresholds.scholarship);
+    const pf=c.split.prefinal, ff=c.split.final;
+
+    let verdict;
+    if(t.sessionGraded){
+      const passed=t.worst>=c.thresholds.close, schol=t.worst>=c.thresholds.scholarship;
+      verdict=`<div class="verdict ${schol?'green':passed?'amber':'red'}">Exam grade is in. Total <b>${t.worst}%</b> — course ${passed?'passed':'<b>not passed</b>'}${schol?', scholarship kept.':passed?', but short of the scholarship.':'.'}</div>`;
+    } else if(nSchol.impossible){
+      verdict=`<div class="verdict red">The scholarship is already <b>out of reach</b>. Passing the course (${c.thresholds.close}%) is still possible: you need between <b>${nClose.lo}</b> and <b>${nClose.hi}</b> on the exam.</div>`;
+    } else if(nSchol.secured){
+      verdict=`<div class="verdict green">The scholarship is already <b>guaranteed</b> with any exam score.</div>`;
+    } else {
+      verdict=`<div class="verdict ${t.worst>=c.thresholds.scholarship?'green':t.best<c.thresholds.close?'red':'amber'}">
+        For the scholarship (&gt;${c.thresholds.scholarship}%) you need between <b>${nSchol.lo}</b> and <b>${nSchol.hi}</b> on the exam.<br>
+        <span style="opacity:0.85;">To pass the course (≥${c.thresholds.close}%): between ${nClose.lo} and ${nClose.hi}.</span>
+      </div>`;
+    }
+
+    const calcBlock=`
+      <div class="gauge">
+        <div class="weeklabel"><span>Week ${wi.week} of ${wi.totalWeeks}${wi.before?' · not started yet':wi.after?' · course finished':''}</span><span>${c.weekdays.map(d=>DOW_LABELS[d]).join('/')}</span></div>
+        <div class="range"><span class="num">${t.worst}</span><span class="dash">–</span><span class="num">${t.best}</span><span class="lbl">worst case —<br>best case</span></div>
+        <div class="ruler">
+          <div class="fill" style="left:${t.worst}%; width:${Math.max(1,t.best-t.worst)}%;"></div>
+          <div class="tick" style="left:${c.thresholds.close}%;"></div>
+          <div class="tick" style="left:${c.thresholds.scholarship}%;"></div>
+          <div class="ticklabel" style="left:${c.thresholds.close}%;">${c.thresholds.close} pass</div>
+          <div class="ticklabel" style="left:${c.thresholds.scholarship}%;">${c.thresholds.scholarship} scholarship</div>
+        </div>
+      </div>
+      ${verdict}
+      <details class="breakdown"><summary>How it is calculated</summary>
+        <div class="bkrow"><span class="k">Graded so far (weight ${r1(t.P.gradedWeight)}%)</span><span class="v">${r1(t.P.worst)}%</span></div>
+        <div class="bkrow"><span class="k">Not graded yet (weight ${r1(100-t.P.gradedWeight)}%)</span><span class="v">0–${r1(100-t.P.gradedWeight)}%</span></div>
+        <div class="bkrow"><span class="k">Exam (${ff}% of the grade)</span><span class="v">${t.sessionGraded? c.session.score+'%' : 'not graded yet'}</span></div>
+        <div class="bkformula">Total = <b>${pf}%</b> × Current points + <b>${ff}%</b> × Exam<br>
+        Worst: ${pf/100}×${r1(t.P.worst)} + ${ff/100}×${t.sessionGraded?c.session.score:0} = <b>${t.worst}</b><br>
+        Best: ${pf/100}×${r1(t.P.best)} + ${ff/100}×${t.sessionGraded?c.session.score:100} = <b>${t.best}</b></div>
+      </details>`;
+
+    /* groups UI */
+    const groupRows=c.groups.map(g=>{
+      const doneCount=g.entries.filter(e=>e.status==='graded').length;
+      const perW=r1(g.totalWeight/g.count);
+      const entryRows=g.entries.map(e=>`
+        <div class="entry-row wrap">
+          <div class="ename">${g.label} ${g.count>1?e.idx:''}</div>
+          ${this.entryControls(c,g,e)}
+        </div>`).join('');
+      return `<details class="group" data-g="${g.id}" ${(this._open||{})[g.id]?'open':''} ontoggle="App._open=App._open||{}; App._open[this.dataset.g]=this.open;">
+        <summary><div style="display:flex; gap:10px; align-items:center;"><span class="gico">${ic(TYPE_ICON[g.type]||'dots',18)}</span><div><div class="gname">${g.label} · ${g.count} pcs</div><div class="gmeta">${g.totalWeight}% total, ≈${perW}% each</div></div></div><div class="gdone">${doneCount}/${g.count}</div></summary>
+        ${entryRows}
+        <div class="group-rm"><button onclick="App.removeGroup('${c.id}','${g.id}')">Delete group</button></div>
+      </details>`;
+    }).join('');
+
+    const wNoteClass=w===100?'ok':w>100?'bad':'warn';
+    const wNoteText=w===100?'Total 100% — the calculation is exact':w>100?`Total ${w}% — over by ${w-100}%, check the weights`:`Total ${w}% of 100% — the result above already works and gets more precise as you add more`;
+
+    const addGroupBlock=`
+      <div class="addgroup">
+        <div class="field-row">
+          <div class="field" style="margin-bottom:8px;"><label>Type</label><select id="gType_${c.id}" onchange="document.getElementById('gCustom_${c.id}').style.display=this.value==='other'?'block':'none';">
+            ${GROUP_TYPES.map(t=>`<option value="${t.v}">${t.l}</option>`).join('')}
+          </select></div>
+        </div>
+        <input id="gCustom_${c.id}" type="text" placeholder="Custom name" style="display:none; width:100%; border:1px solid var(--line); border-radius:8px; padding:9px 10px; font-size:13px; background:var(--surface); margin-bottom:10px;">
+        <div class="choices" style="margin:4px 0 10px;">
+          <div class="choice sel" id="gm_single_${c.id}" onclick="App.pickMode('${c.id}','single')">${ic('cal',15)}Specific day</div>
+          <div class="choice" id="gm_weekly_${c.id}" onclick="App.pickMode('${c.id}','weekly')">${ic('repeat',15)}Repeating</div>
+        </div>
+        <input type="hidden" id="gMode_${c.id}" value="single">
+        <div class="field-row">
+          <div class="field" style="margin-bottom:8px;"><label id="gDowL_${c.id}">Weekday</label><select id="gDow_${c.id}"><option value="">—</option>${DOW_ORDER.map(d=>`<option value="${d}">${DOW_LABELS[d]}</option>`).join('')}</select></div>
+          <div class="field" style="margin-bottom:8px;"><label id="gFromL_${c.id}">Week</label><select id="gFrom_${c.id}"><option value="">—</option>${Array.from({length:c.totalWeeks},(_,i)=>`<option value="${i+1}">Week ${i+1}</option>`).join('')}</select></div>
+        </div>
+        <div class="sec-sub" id="gHint_${c.id}" style="margin-bottom:8px;">Pick a week and a day — a grade cannot be entered before that day.</div>
+        <div class="addline">
+          <input id="gCount_${c.id}" class="c" type="number" min="1" value="1" title="count" disabled>
+          <input id="gWeight_${c.id}" class="w" type="number" placeholder="weight %" title="total weight of the group">
+          <button class="btn sm" onclick="App.addGroup('${c.id}', document.getElementById('gType_${c.id}').value, document.getElementById('gCustom_${c.id}').value, document.getElementById('gCount_${c.id}').value, document.getElementById('gWeight_${c.id}').value, document.getElementById('gMode_${c.id}').value, document.getElementById('gDow_${c.id}').value, document.getElementById('gFrom_${c.id}').value)">Add</button>
+        </div>
+      </div>`;
+
+    /* session (exam) gating */
+    let sessionBlock;
+    if(!c.session.decided){
+      sessionBlock = this._sessFormOpen===c.id
+        ? `<div class="panel">
+            <div class="field"><label>Exam date</label><input type="date" id="sessDate_${c.id}"></div>
+            <div class="check-row"><input type="checkbox" id="sessTBD_${c.id}" onchange="document.getElementById('sessDate_${c.id}').disabled=this.checked;"> date not set yet</div>
+            <button class="btn sm" onclick="App.confirmSessionDate('${c.id}', document.getElementById('sessDate_${c.id}').value, document.getElementById('sessTBD_${c.id}').checked)">Save</button>
+          </div>`
+        : `<div class="lockcard"><div class="lk">${ic('lock',24)}</div><p>Set the exam date first — then grade entry unlocks.</p><button class="btn sm" onclick="App.openSessionDateForm('${c.id}')">Set exam date</button></div>`;
+    } else {
+      const dateLabel = c.session.undetermined ? 'date not set' : fmtDate(c.session.date);
+      sessionBlock = `<div class="sessioninfo"><span>Exam: <b>${dateLabel}</b></span><span class="edit" onclick="App.editSessionDate('${c.id}')">edit</span></div>
+        ${this._sessFormOpen===c.id ? `<div class="panel">
+            <div class="field"><label>Exam date</label><input type="date" id="sessDate_${c.id}" value="${c.session.date||''}" ${c.session.undetermined?'disabled':''}></div>
+            <div class="check-row"><input type="checkbox" id="sessTBD_${c.id}" ${c.session.undetermined?'checked':''} onchange="document.getElementById('sessDate_${c.id}').disabled=this.checked;"> date not set yet</div>
+            <button class="btn sm" onclick="App.confirmSessionDate('${c.id}', document.getElementById('sessDate_${c.id}').value, document.getElementById('sessTBD_${c.id}').checked)">Save</button>
+          </div>` : ''}
+        <div class="field" style="margin-top:4px;"><label>Exam grade</label><input type="number" min="0" max="100" placeholder="score" value="${c.session.score===null?'':c.session.score}" onchange="App.updateSessionScore('${c.id}', this.value)"></div>`;
+    }
+
+    const TABS=[['overview','Overview','target'],['grades','Grades','clip'],['engage','Engagement','pulse'],['schedule','Classes','cal'],['formula','Formula','sigma']];
+    const tabsHtml=`<div class="tabs">${TABS.map(([k,l,i])=>`<button class="tab ${this.courseTab===k?'on':''}" onclick="App.setTab('${k}')">${ic(i,15)}${l}</button>`).join('')}</div>`;
+    let page;
+    if(this.courseTab==='grades'){
+      page=`<h2 class="sec">${ic('clip',18)}Components before the exam</h2>
+        <div class="wmeter ${w>100?'over':''}"><div class="f" style="width:${Math.min(100,w)}%;"></div></div>
+        <div class="wnote ${wNoteClass}">${wNoteText}</div>
+        ${groupRows?`<div style="margin:10px 0;">${groupRows}</div>`:`<p class="lede">Example: Midterm ×1 at 35%, Homework ×15 at 25% — the weight is split evenly across all 15.</p>`}
+        ${w>=100?'':(this._addOpen===c.id?`<div class="sec-sub" style="margin-bottom:8px;">Remaining weight: ${r1(100-w)}%</div>${addGroupBlock}<button class="btn ghost" onclick="App.toggleAdd('${c.id}')">Cancel</button>`:`<button class="btn outline" onclick="App.toggleAdd('${c.id}')">${ic('plus',16)} Add component</button>`)}
+        <h2 class="sec">${ic('doc',18)}Exam</h2>
+        ${sessionBlock}`;
+    } else if(this.courseTab==='engage'){ page=this.renderEngagementModule(c);
+    } else if(this.courseTab==='schedule'){ page=this.renderSchedule(c)+`<div style="height:12px;"></div><button class="btn" onclick="App.openCheckin('${c.id}')">Check in</button>`;
+    } else if(this.courseTab==='formula'){
+      page=`<h2 class="sec">${ic('sigma',18)}Formula settings</h2>
+        <div class="panel">
+          <div class="field-row">
+            <div class="field"><label>Before exam, %</label><input type="number" min="0" max="100" value="${c.split.prefinal}" onchange="App.updateSplit('${c.id}','prefinal', this.value)"></div>
+            <div class="field"><label>Exam, %</label><input type="number" min="0" max="100" value="${c.split.final}" onchange="App.updateSplit('${c.id}','final', this.value)"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Pass threshold</label><input type="number" min="0" max="100" value="${c.thresholds.close}" onchange="App.updateThreshold('${c.id}','close', this.value)"></div>
+            <div class="field"><label>Scholarship threshold</label><input type="number" min="0" max="100" value="${c.thresholds.scholarship}" onchange="App.updateThreshold('${c.id}','scholarship', this.value)"></div>
+          </div>
+        </div>
+        <button class="btn ghost" onclick="if(confirm('Delete the whole course?')) App.deleteCourse('${c.id}')">Delete course</button>`;
+    } else {
+      page=`${calcBlock}
+        <div class="btn-row" style="margin-top:14px;"><button class="btn" onclick="App.openCheckin('${c.id}')">Check in</button><button class="btn outline" onclick="App.setTab('grades')">Enter grades</button></div>`;
+    }
+    return `<h2 class="sec" style="margin-top:6px;">${esc(c.name)}</h2>${tabsHtml}${page}`;
+  },
+
+  renderSchedule(c){
+    const t=this.today(); const todayIso=isoDate(t);
+    const byWeek={};
+    c.sessions.forEach(s=>{ (byWeek[s.week]=byWeek[s.week]||[]).push(s); });
+    const curWeek=this.weekInfo(c).week;
+    const blocks=Object.keys(byWeek).sort((a,b)=>a-b).map(wk=>{
+      const dots=byWeek[wk].map(s=>{
+        const done=c.checkins.some(ci=>ci.date===s.date);
+        const isToday=s.date===todayIso;
+        return `<div class="daydot ${done?'done':''}" style="${isToday?'outline:1.5px solid var(--blue);':''}">${DOW_LABELS[s.dow]} ${fmtDate(s.date)}${done?' ✓':''}</div>`;
+      }).join('');
+      return `<details class="weekblock ${Number(wk)===curWeek?'current':''}" ${Number(wk)===curWeek?'open':''}>
+        <summary><span>Week ${wk}</span><span style="color:var(--ink-soft); font-weight:400;">${byWeek[wk].filter(s=>c.checkins.some(ci=>ci.date===s.date)).length}/${byWeek[wk].length}</span></summary>
+        <div class="daydots">${dots}</div>
+      </details>`;
+    }).join('');
+    const doneTotal=c.sessions.filter(s=>s.date<=todayIso && c.checkins.some(ci=>ci.date===s.date)).length;
+    const expectedTotal=c.sessions.filter(s=>s.date<=todayIso).length;
+    return `<h2 class="sec">${ic('cal',18)}Schedule</h2>
+      <div class="sec-sub">Checked in ${doneTotal} of ${expectedTotal} past classes</div>
+      ${blocks}`;
+  },
+
+  setEngRange(r){ this._engRange=r; this._engSel=null; this.render(); },
+  selEng(i){ this._engSel=i; this.render(); },
+  renderEngagementModule(c){
+    const e=this.engStatusFor(c);
+    const sorted=[...c.checkins].sort((a,b)=>a.date<b.date?-1:1);
+    const n=sorted.length, N=BaselineEngine.N, thr=BaselineEngine.dropThreshold;
+    const rows=sorted.map((ci,i)=>{
+      const sc=r1(BaselineEngine.score(ci)); let base=null, drop=false;
+      if(i>=N){ const h=sorted.slice(i-N,i); base=r1(h.reduce((s,x)=>s+BaselineEngine.score(x),0)/N); drop=base>0&&(base-sc)/base>=thr; }
+      const ses=c.sessions.find(x=>x.date===ci.date);
+      return {ci, sc, base, drop, week:ses?ses.week:'?', dow:ses?DOW_LABELS[ses.dow]:''};
+    });
+    const last=rows[n-1];
+    const lastLine=last?`<div class="sub" style="margin-top:6px; opacity:0.8;">Latest check-in: Week ${last.week} · ${last.dow} ${fmtDate(last.ci.date)}</div>`:'';
+    let hero;
+    if(e.status==='none') hero=`<div class="eng-hero"><div class="big">—</div><div class="sub">No check-ins for this course yet</div></div>`;
+    else if(e.status==='insufficient') hero=`<div class="eng-hero"><div class="big">${e.have}/${e.need}</div><div class="sub">Check-ins collected — ${e.need-e.have} more to go, then your personal baseline shows up</div>${lastLine}</div>`;
+    else if(e.status==='drop') hero=`<div class="eng-hero"><div class="big">-${e.dropPct}%</div><div class="sub">today ${e.todayScore}/100, usually ${e.baseline}/100 — a noticeable drop</div>${lastLine}</div>`;
+    else hero=`<div class="eng-hero"><div class="big">${e.todayScore}/100</div><div class="sub">normal, usually around ${e.baseline}/100</div>${lastLine}</div>`;
+    const avg=n?r1(rows.reduce((s,r)=>s+r.sc,0)/n):0;
+    const drops=rows.filter(r=>r.drop).length;
+
+    const rng=String(this._engRange||'14');
+    const view=rng==='all'?rows:rows.slice(-Number(rng));
+    let sel=this._engSel; if(sel==null||sel<0||sel>=view.length) sel=view.length-1;
+    const cur=view[sel];
+    const rngBar=`<div class="rng">${[['7','Last 7'],['14','Last 14'],['all','All']].map(([v,l])=>`<button class="rngb ${rng===v?'on':''}" onclick="App.setEngRange('${v}')">${l}</button>`).join('')}</div>`;
+    let detail='';
+    if(cur){
+      const ci=cur.ci;
+      const what=ci.attended?`Attended · participation ${ci.participation}/5 · understanding ${ci.understanding}/5`:ci.watched?`Absent · watched the recording · clarity ${ci.understanding}/5`:'Absent · did not watch the recording';
+      const diff=cur.base!==null?r1(cur.sc-cur.base):null;
+      detail=`<div class="eng-detail">
+        <div class="ed-top"><button class="ed-nav" ${sel<=0?'disabled':''} onclick="App.selEng(${sel-1})">‹</button>
+          <div class="ed-title"><b>Week ${cur.week}</b> · ${cur.dow} ${fmtDate(ci.date)}</div>
+          <button class="ed-nav" ${sel>=view.length-1?'disabled':''} onclick="App.selEng(${sel+1})">›</button></div>
+        <div class="ed-score"><span class="${cur.drop?'bad':''}">${cur.sc}</span><small>/100</small>
+          ${diff!==null?`<span class="ed-vs ${cur.drop?'bad':'good'}">${diff>=0?'+':''}${diff} vs baseline ${cur.base}</span>`:`<span class="ed-vs">baseline not ready yet</span>`}</div>
+        <div class="ed-lines">${what}</div></div>`;
+    }
+    const chartBlock=n>=1?`<div class="chartwrap"><div class="chartlbl"><span>Engagement by check-in</span><span>tap a point</span></div>${rngBar}${this.buildChart(view,sel)}
+      <div class="legend"><span><i></i>Score</span><span><i class="red"></i>Drop</span><span><i class="dash"></i>Baseline</span></div></div>${detail}`:'';
+    const histRows=rows.slice().reverse().slice(0,10).map(r=>{
+      const ci=r.ci;
+      const t=ci.attended?`attended · part. ${ci.participation}/5 · und. ${ci.understanding}/5`:ci.watched?`absent · watched · clarity ${ci.understanding}/5`:'absent · did not watch';
+      return `<div class="hrow"><div class="d">Week ${r.week}</div><div class="icons">${r.dow} ${fmtDate(ci.date)} · ${t}</div><div class="sc ${r.drop?'bad':''}">${r.sc}</div></div>`;
+    }).join('') || '<div class="hrow"><div class="icons">No check-ins yet</div></div>';
+
+    return `<h2 class="sec">${ic('pulse',18)}Engagement</h2>
+      <div class="sec-sub">Personal baseline over the last ${N} check-ins · drop threshold ${Math.round(thr*100)}%</div>
+      ${hero}
+      <div class="stat-row">
+        <div class="stat"><div class="n">${n}</div><div class="l">total check-ins</div></div>
+        <div class="stat"><div class="n">${avg}</div><div class="l">average score</div></div>
+        <div class="stat"><div class="n">${drops}</div><div class="l">times dropped</div></div>
+      </div>
+      ${chartBlock}
+      <details class="breakdown"><summary>How it is calculated</summary>
+        <div class="bkformula">Present: 40 + participation×30 + understanding×30 (1–5 scale)<br>
+        Absent: recording 15 + clarity×25 (max 40)<br>
+        Baseline = average of the previous ${N} check-ins (not including today)<br>
+        A drop is flagged when the score falls by ${Math.round(thr*100)}% or more.<br>
+        A skipped day is not logged and does not hurt the baseline.</div>
+      </details>
+      <div class="history">${histRows}</div>
+      <div style="height:12px;"></div>
+      <button class="btn" onclick="App.openCheckin('${c.id}')">Check in</button>`;
+  },
+
+  buildChart(view,sel){
+    const W=420,H=200,L=30,R=12,T=14,B=30, iw=W-L-R, ih=H-T-B, k=view.length;
+    const x=i=>L+(k===1?iw/2:i*iw/(k-1)), y=v=>T+ih-(v/100)*ih;
+    const grid=[0,25,50,75,100].map(v=>`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${L-6}" y="${y(v)+3}" text-anchor="end" font-size="9" fill="var(--ink-soft)">${v}</text>`).join('');
+    const pts=view.map((r,i)=>[x(i),y(r.sc)]);
+    const path=pts.map((q,i)=>`${i?'L':'M'} ${q[0]} ${q[1]}`).join(' ');
+    const area=k>1?`${path} L ${pts[k-1][0]} ${y(0)} L ${pts[0][0]} ${y(0)} Z`:'';
+    const bp=view.map((r,i)=>r.base!==null?[x(i),y(r.base)]:null).filter(Boolean).map((q,i)=>`${i?'L':'M'} ${q[0]} ${q[1]}`).join(' ');
+    const step=Math.max(1,Math.ceil(k/7));
+    const xl=view.map((r,i)=>(i%step===0||i===k-1)?`<text x="${x(i)}" y="${H-10}" text-anchor="middle" font-size="9" fill="var(--ink-soft)">W${r.week}</text>`:'').join('');
+    const dots=view.map((r,i)=>{ const on=i===sel, col=r.drop?'var(--red)':'var(--g2)';
+      return `<g onclick="App.selEng(${i})" style="cursor:pointer;"><circle cx="${x(i)}" cy="${y(r.sc)}" r="16" fill="transparent"/>${on?`<circle cx="${x(i)}" cy="${y(r.sc)}" r="10" fill="${col}" opacity="0.22"/>`:''}<circle cx="${x(i)}" cy="${y(r.sc)}" r="${on?5.5:3.8}" fill="${col}" stroke="var(--surface)" stroke-width="1.5"/></g>`; }).join('');
+    const guide=`<line x1="${x(sel)}" x2="${x(sel)}" y1="${T}" y2="${y(0)}" stroke="var(--g2)" stroke-width="1" stroke-dasharray="2,3" opacity="0.6"/>`;
+    return `<svg viewBox="0 0 ${W} ${H}" style="width:100%; height:auto;"><defs><linearGradient id="chGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--g2)" stop-opacity="0.35"/><stop offset="100%" stop-color="var(--g2)" stop-opacity="0"/></linearGradient></defs>${grid}${xl}${area?`<path d="${area}" fill="url(#chGrad)"/>`:''}${bp?`<path d="${bp}" fill="none" stroke="var(--ink-soft)" stroke-width="1.2" stroke-dasharray="4,3"/>`:''}${k>1?`<path d="${path}" fill="none" stroke="var(--g2)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`:''}${guide}${dots}</svg>`;
+  },
+
+  render_checkin(){
+    const c=this.course(this.activeCourseId);
+    const todayIso=isoDate(this.today());
+    const near=this.eligibleSessions(c);
+    const defaultSession = near[0];
+    if(!near.length){
+      const nx=c.sessions.filter(s=>s.date>todayIso).sort((a,b)=>a.date<b.date?-1:1)[0];
+      return `<h2 class="sec" style="margin-top:6px;">Check-in · ${esc(c.name)}</h2><div class="empty"><div class="ic">${ic('lock',22)}</div><div class="big">Nothing to check in yet</div><p style="font-size:13px; max-width:290px; margin:0 auto 18px;">All past classes are already checked in. ${nx?`Next class — ${DOW_LABELS[nx.dow]} ${fmtDate(nx.date)}: you can check in on that day.`:'No more classes in the schedule.'}</p></div><button class="btn" onclick="App.openCourse('${c.id}','engage')">To course</button>`;
+    }
+    this._a=this._a??true; this._p=this._p??3; this._u=this._u??3; this._w=this._w??true;
+    const ch=(g,v,l,fn)=>`<div class="choice ${this['_'+g]===v?'sel':''}" onclick="${fn}">${l}</div>`;
+    const options = near.map(s=>`<option value="${s.date}" ${defaultSession&&s.date===defaultSession.date?'selected':''}>Week ${s.week} · ${DOW_LABELS[s.dow]} ${fmtDate(s.date)}${s.date===todayIso?' (today)':''}</option>`).join('');
+    return `
+      <h2 class="sec" style="margin-top:6px;">Check-in · ${esc(c.name)}</h2>
+      <div class="field"><label>Which class are you checking in for?</label><select id="sessPick_${c.id}">${options || '<option value="'+todayIso+'">'+fmtDate(todayIso)+'</option>'}</select></div>
+      <div class="panel">
+        <div class="choice-label">Did you attend the class?</div>
+        <div class="choices">${ch('a',true,'Yes',"App._a=true; App.render();")}${ch('a',false,'No',"App._a=false; App.render();")}</div>
+        ${this._a?`
+        <div class="choice-label">How actively did you participate?<span class="scalehint">1 — stayed silent, 5 — very active</span></div>
+        <div class="choices">${[1,2,3,4,5].map(n=>ch('p',n,n,"App._p="+n+"; App.render();")).join('')}</div>
+        <div class="choice-label">How clear was the material?<span class="scalehint">1 — understood nothing, 5 — everything is clear</span></div>
+        <div class="choices">${[1,2,3,4,5].map(n=>ch('u',n,n,"App._u="+n+"; App.render();")).join('')}</div>`:`
+        <div class="choice-label">Did you watch the recording or read the materials?</div>
+        <div class="choices">${ch('w',true,'Yes',"App._w=true; App.render();")}${ch('w',false,'No',"App._w=false; App.render();")}</div>
+        ${this._w?`<div class="choice-label">How clear is the topic?<span class="scalehint">1 — not clear at all, 5 — everything is clear</span></div>
+        <div class="choices">${[1,2,3,4,5].map(n=>ch('u',n,n,"App._u="+n+"; App.render();")).join('')}</div>`:''}`}
+      </div>
+      <p class="lede">Missed the class? Choose “No” and answer the questions about the materials. A day you skip entirely is simply not logged and does not count as a drop.</p>
+      <button class="btn" onclick="App.submitCheckin('${c.id}', document.getElementById('sessPick_${c.id}').value, App._a, App._p, App._u, App._w); App._a=undefined; App._p=undefined; App._u=undefined; App._w=undefined;">Done</button>
+      <button class="btn ghost" onclick="App.openCourse('${c.id}')">Back without saving</button>
+    `;
+  },
+
+  render_checkin_done(){
+    const c=this.course(this.activeCourseId);
+    return `<div class="empty"><div class="ic">${ic('check',22)}</div><div class="big">Check-in saved</div>
+    <p style="font-size:13px; max-width:260px; margin:0 auto 18px;">This goes into your personal baseline for “${esc(c.name)}”. Move the demo date forward and check in again to show how history builds up.</p></div>
+    <button class="btn" onclick="App.openCourse('${c.id}')">To course</button>
+    <button class="btn ghost" onclick="App.goDashboard()">Go home</button>`;
+  }
+};
+
+function weeksWord(n){ return n===1?'week':'weeks'; }
+
+App.migrate();
+App.applyTheme();
+App.render();
+</script>
+</body>
+</html>
